@@ -1208,4 +1208,74 @@ describe('babies collection document', function () {
       expect(b7[0]._oldRev).to.be.a('string');
     });
   });
+
+  describe('overwrite', function () {
+    let base_url = '/_api/document/' + cn;
+    it('overwrite once', function () {
+      let url1 = base_url;
+      let req1 = request.post(url1, extend(endpoint, {
+        body: JSON.stringify([{
+          'Hallo': 12
+        }])
+      }));
+      let b1 = JSON.parse(req1.rawBody);
+      let res1 = b1[0]
+
+      let url2 = base_url + '?overwrite=true&returnOld=true';
+      let req2 = request.post(url2, extend(endpoint, {
+        body: JSON.stringify([{
+          '_key': res1._key,
+          'ulf': 42
+        }])
+      }));
+      let b2 = JSON.parse(req2.rawBody);
+      let res2 = b2[0]
+
+      expect(req2.statusCode).to.equal(202);
+      expect(req2._key).to.equal(req1._key);
+    })
+
+    it('overwrite multi', function () {
+      let url1 = base_url;
+      let req1 = request.post(url1, extend(endpoint, {
+        body: JSON.stringify([{
+          'Hallo': 12
+        }])
+      }));
+      let b1 = JSON.parse(req1.rawBody);
+      let res1 = b1[0]
+      let key1 = res1._key
+
+      print("#############################################")
+      print(res1);
+
+      let url2 = base_url + '?overwrite=true&returnOld=true';
+      let req2 = request.post(url2, extend(endpoint, {
+        body: JSON.stringify([{
+          '_key': key1,
+          'ulf': 42
+        }])
+      }));
+      let b2 = JSON.parse(req2.rawBody);
+      print("#############################################")
+      print(b2);
+
+      //expect(req1.statusCode).to.equal(202);
+
+      //let b1 = JSON.parse(req1.rawBody);
+
+      //expect(b1).to.be.instanceof(Array);
+      //expect(b1).to.have.lengthOf(1);
+      //expect(b1[0]).to.be.a('object');
+      //expect(Object.keys(b1[0])).to.have.lengthOf(3);
+      //expect(b1[0]._id).to.be.a('string');
+      //expect(b1[0]._key).to.be.a('string');
+      //expect(b1[0]._rev).to.be.a('string');
+      //expect(req2.statusCode).to.equal(202);
+      //expect(b2[0]['new']).to.be.a('object');
+      //expect(Object.keys(b2[0]['new'])).to.have.lengthOf(4);
+      //expect(b2[0]['new'].Hallo).to.equal(12);
+
+    });
+  }); // overwrite - end
 });
